@@ -20,7 +20,6 @@ public class UserServiceImpl implements UserService{
         return (List<User>) userRepo.findAll();
     }
 
-    @Transactional
     @Override
     public int create(User user) {
         userRepo.save(user);
@@ -34,7 +33,6 @@ public class UserServiceImpl implements UserService{
         else throw new EntityNotFoundException();
     }
 
-    @Transactional
     @Override
     public boolean changePassword(int id, String old_password, String new_password) throws EntityNotFoundException, VerifyError {
         User user = userRepo.findById(id);
