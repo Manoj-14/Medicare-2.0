@@ -1,0 +1,17 @@
+type User{
+    id:ID!
+    name:String
+    email:String
+    password:String
+}
+
+type Query{
+    findAllUser: [User]!
+    countUsers: Float
+}
+
+type Mutation{
+    newUser(name:String!,email:String!,password:String!):User!
+    deleteUser(id:ID!) : Boolean
+    updatePassword(oldPassword:String!,newPassword:String!,id:ID!):User!
+}
