@@ -9,4 +9,5 @@ public interface AdminRepository extends CrudRepository<Admin,Integer> {
     boolean existsAdminByEmail(String email);
     Admin findAdminByEmail(String email);
     Admin findById(int id);
+    Admin findAdminByEmailAndPassword(String email,String password);
 }
