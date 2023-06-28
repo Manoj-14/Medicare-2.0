@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.service.UserService;
 import com.example.demo.service.UserServiceImpl;
 import com.example.demo.utils.Log;
@@ -14,6 +15,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+
+//TODO Controllers need to be added
+// -removeFromCart
+// -purchase
+// -paymentGateway
 
 @RestController
 @RequestMapping("/api/users")
@@ -49,8 +55,6 @@ public class UserController {
     @PutMapping("/changePassword/{id}")
     public ResponseEntity<?> changePassword(@PathVariable int id,@RequestParam String old_password, @RequestParam String new_password){
         try{
-            Log.INFO("Old Password:"+old_password);
-            Log.INFO("New Password:"+new_password);
             userService.changePassword(id,old_password,new_password);
             return new ResponseEntity<>("Password changed", HttpStatus.OK);
         }catch (EntityNotFoundException ene){
@@ -59,4 +63,27 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Password not matched");
         }
     }
+
+    @PutMapping("/addToCart/{medicineId}")
+    public ResponseEntity<?> addToCart(@RequestBody String email ,@PathVariable int medicineId){
+        try{
+            userService.addToCart(email,medicineId);
+            return new ResponseEntity<>("Added to cart",HttpStatus.OK);
+        }catch (EntityNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Medicine Not found");
+        }catch (MedicineInActiveException mne){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE , "Medicine requested is inactive");
+        }
+    }
+    @PutMapping("/removeToCart/{medicineId}")
+    public ResponseEntity<?> removeFromCart(@RequestBody String email ,@PathVariable int medicineId){
+        try{
+            userService.removeFromCart(email,medicineId);
+            return new ResponseEntity<>("Removed from cart",HttpStatus.OK);
+        }catch (EntityNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Medicine Not found");
+        }
+    }
+
+
 }

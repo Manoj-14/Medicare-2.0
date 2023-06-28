@@ -22,7 +22,7 @@ public class User {
     String password;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    List<Cart> cart;
+    List<Cart> cart = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Purchase> purchases = new ArrayList<>();
