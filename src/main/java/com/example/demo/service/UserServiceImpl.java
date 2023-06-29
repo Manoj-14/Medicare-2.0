@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.repository.MedicineRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.Log;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService{
     public User findUser(String email) throws EntityNotFoundException {
         User user = userRepo.findByEmail(email);
         if(user != null)  return user;
-        else throw new EntityNotFoundException();
+        else throw new EntityNotFoundException("User Not found");
     }
 
     @Override
@@ -68,6 +69,8 @@ public class UserServiceImpl implements UserService{
     @Override
     public void addToCart(String userEmail,int medicineId) throws EntityNotFoundException, MedicineInActiveException {
         try{
+            Log.DEBUG("Medicine ID : "+medicineId);
+            Log.DEBUG("User Email : "+ userEmail);
             Medicine dbMedicine = medicineService.getMedicine(medicineId);
             if(dbMedicine.isActive()){
                 User user = this.findUser(userEmail);

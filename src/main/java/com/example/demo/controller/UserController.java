@@ -15,9 +15,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 //TODO Controllers need to be added
-// -removeFromCart
 // -purchase
 // -paymentGateway
 
@@ -65,25 +65,27 @@ public class UserController {
     }
 
     @PutMapping("/addToCart/{medicineId}")
-    public ResponseEntity<?> addToCart(@RequestBody String email ,@PathVariable int medicineId){
+    public ResponseEntity<?> addToCart(@RequestBody Map<String,String> request ,@PathVariable int medicineId){
+        String email = request.get("email");
+        Log.INFO("Email: "+email);
+        Log.INFO("Medicine ID: "+medicineId);
         try{
             userService.addToCart(email,medicineId);
             return new ResponseEntity<>("Added to cart",HttpStatus.OK);
         }catch (EntityNotFoundException ene){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Medicine Not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }catch (MedicineInActiveException mne){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE , "Medicine requested is inactive");
         }
     }
     @PutMapping("/removeToCart/{medicineId}")
-    public ResponseEntity<?> removeFromCart(@RequestBody String email ,@PathVariable int medicineId){
+    public ResponseEntity<?> removeFromCart(@RequestBody Map<String,String> request , @PathVariable int medicineId){
+        String email = request.get("email");
         try{
             userService.removeFromCart(email,medicineId);
             return new ResponseEntity<>("Removed from cart",HttpStatus.OK);
         }catch (EntityNotFoundException ene){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Medicine Not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
-
-
 }
