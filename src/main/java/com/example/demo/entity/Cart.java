@@ -52,7 +52,13 @@ public class Cart {
         this.id = id;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "id=" + id +
+                ", medicines=" + medicines +
+                ", quantity=" + quantity +
+                '}';
+    }
 }
 

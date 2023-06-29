@@ -87,4 +87,15 @@ public class User {
         this.purchases = purchases;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "user_id=" + user_id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", cart=" + cart +
+                ", purchases=" + purchases +
+                '}';
+    }
 }
