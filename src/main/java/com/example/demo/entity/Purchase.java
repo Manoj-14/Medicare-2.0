@@ -1,11 +1,5 @@
 package com.example.demo.entity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Purchase {
@@ -21,16 +15,33 @@ public class Purchase {
 
     double totalAmount;
 
+    @Embedded
+    @Column(name = "payment method")
+    PaymentMethods paymentMethod;
+
+    public PaymentMethods getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethods paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     public Purchase() {
 
     }
-
-    public Purchase(User user, Medicine medicine, int quantity, double totalAmount) {
-        super();
-
+    public Purchase(Medicine medicine, int quantity, double totalAmount) {
         this.medicine = medicine;
         this.quantity = quantity;
         this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Purchase(Medicine medicine, int quantity, double totalAmount, PaymentMethods paymentMethod) {
+        this.medicine = medicine;
+        this.quantity = quantity;
+        this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
     }
 
     public int getId() {
@@ -66,5 +77,15 @@ public class Purchase {
         this.totalAmount = totalAmount;
     }
 
+    @Override
+    public String toString() {
+        return "Purchase{" +
+                "id=" + id +
+                ", medicine=" + medicine +
+                ", quantity=" + quantity +
+                ", totalAmount=" + totalAmount +
+                ", paymentMethod=" + paymentMethod +
+                '}';
+    }
 }
 
