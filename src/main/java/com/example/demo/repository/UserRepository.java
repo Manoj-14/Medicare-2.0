@@ -14,4 +14,5 @@ public interface UserRepository extends CrudRepository<User,Integer> {
     boolean existsByEmailAndCart_Medicines_Id(String email , int medicineId);
     @Query("SELECT cart FROM User user JOIN user.cart cart JOIN cart.medicines medicine WHERE user.email = :userEmail AND medicine.id = :medicineId")
     Cart findCartByEmailAndMedicineId(String userEmail, int medicineId);
+
 }

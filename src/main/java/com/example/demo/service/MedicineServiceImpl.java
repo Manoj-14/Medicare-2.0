@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Medicine;
 import com.example.demo.exception.EntityCreatingException;
+import com.example.demo.exception.MedicineNotFoundException;
 import com.example.demo.repository.MedicineRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -60,10 +61,10 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public Medicine getMedicine(int id) throws EntityNotFoundException{
+    public Medicine getMedicine(int id) throws MedicineNotFoundException {
         Medicine medicine = medicineRepository.findById(id);
         if(medicine == null){
-            throw new EntityNotFoundException();
+            throw new MedicineNotFoundException();
         }
         else{
             return medicine;

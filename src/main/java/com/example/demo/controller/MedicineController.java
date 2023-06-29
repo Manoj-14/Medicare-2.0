@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Medicine;
 import com.example.demo.exception.EntityCreatingException;
+import com.example.demo.exception.MedicineNotFoundException;
 import com.example.demo.service.MedicineService;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.Response;
@@ -34,7 +35,7 @@ public class MedicineController {
         try{
             Medicine medicine = medicineService.getMedicine(id);
             return new ResponseEntity<Medicine>(medicine,HttpStatus.OK);
-        }catch (EntityNotFoundException ene){
+        }catch (MedicineNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         }
     }

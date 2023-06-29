@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Medicine;
 import com.example.demo.exception.EntityCreatingException;
+import com.example.demo.exception.MedicineNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -20,7 +21,7 @@ public interface MedicineService {
     @Transactional
     void update(Medicine medicine) throws EntityCreatingException;
 
-    Medicine getMedicine(int id) throws EntityNotFoundException;
+    Medicine getMedicine(int id) throws MedicineNotFoundException;
 
     List<Medicine> getMedicines();
 }

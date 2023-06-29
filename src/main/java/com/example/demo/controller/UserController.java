@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
+import com.example.demo.exception.MedicineNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.service.UserService;
 import com.example.demo.service.UserServiceImpl;
 import com.example.demo.utils.Log;
@@ -46,7 +48,7 @@ public class UserController {
         try {
             User user = userService.findUser(id);
             return ResponseEntity.ok(user);
-        }catch (EntityNotFoundException ene){
+        }catch (UserNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User not found");
         }
 
@@ -57,7 +59,7 @@ public class UserController {
         try{
             userService.changePassword(id,old_password,new_password);
             return new ResponseEntity<>("Password changed", HttpStatus.OK);
-        }catch (EntityNotFoundException ene){
+        }catch (UserNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }catch (VerifyError ve){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Password not matched");
@@ -72,10 +74,12 @@ public class UserController {
         try{
             userService.addToCart(email,medicineId);
             return new ResponseEntity<>("Added to cart",HttpStatus.OK);
-        }catch (EntityNotFoundException ene){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }catch (MedicineNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         }catch (MedicineInActiveException mne){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE , "Medicine requested is inactive");
+        }catch (UserNotFoundException une){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }
     }
     @PutMapping("/removeToCart/{medicineId}")
@@ -84,7 +88,9 @@ public class UserController {
         try{
             userService.removeFromCart(email,medicineId);
             return new ResponseEntity<>("Removed from cart",HttpStatus.OK);
-        }catch (EntityNotFoundException ene){
+        }catch (MedicineNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }

@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface MedicineRepository extends CrudRepository<Medicine,Integer> {
     Medicine findById(int id);
+
 }

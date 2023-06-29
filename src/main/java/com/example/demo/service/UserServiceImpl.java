@@ -2,8 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.Medicine;
+import com.example.demo.entity.Purchase;
 import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
+import com.example.demo.exception.MedicineNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.MedicineRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.Log;
@@ -36,23 +39,23 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User findUser(int id) throws EntityNotFoundException {
+    public User findUser(int id) throws UserNotFoundException {
         User user = userRepo.findById(id);
         if(user != null)  return user;
-        else throw new EntityNotFoundException();
+        else throw new UserNotFoundException();
     }
 
     @Override
-    public User findUser(String email) throws EntityNotFoundException {
+    public User findUser(String email) throws UserNotFoundException {
         User user = userRepo.findByEmail(email);
         if(user != null)  return user;
-        else throw new EntityNotFoundException("User Not found");
+        else throw new UserNotFoundException();
     }
 
     @Override
-    public boolean changePassword(int id, String old_password, String new_password) throws EntityNotFoundException, VerifyError {
+    public boolean changePassword(int id, String old_password, String new_password) throws UserNotFoundException, VerifyError {
         User user = userRepo.findById(id);
-        if(user == null) throw new EntityNotFoundException();
+        if(user == null) throw new UserNotFoundException();
         else{
             if (!Objects.equals(user.getPassword(), old_password)){
                 throw new VerifyError();
@@ -67,7 +70,7 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     @Override
-    public void addToCart(String userEmail,int medicineId) throws EntityNotFoundException, MedicineInActiveException {
+    public void addToCart(String userEmail,int medicineId) throws MedicineNotFoundException, MedicineInActiveException, UserNotFoundException {
         try{
             Log.DEBUG("Medicine ID : "+medicineId);
             Log.DEBUG("User Email : "+ userEmail);
@@ -80,6 +83,7 @@ public class UserServiceImpl implements UserService{
                 }
                 else {
                     Cart newCart = new Cart(dbMedicine , 1);
+                    Log.INFO(newCart.toString());
                     user.getCart().add(newCart);
                 }
                 userRepo.save(user);
@@ -87,13 +91,15 @@ public class UserServiceImpl implements UserService{
             else {
                 throw new MedicineInActiveException("Medicine is Inactive");
             }
-        }catch (EntityNotFoundException ene){
-            throw new EntityNotFoundException();
+        }catch (MedicineNotFoundException ene){
+            throw new MedicineNotFoundException();
+        }catch (UserNotFoundException ene){
+            throw new UserNotFoundException();
         }
     }
 
     @Override
-    public void removeFromCart(String userEmail, int medicineId) throws EntityNotFoundException{
+    public void removeFromCart(String userEmail, int medicineId) throws UserNotFoundException, MedicineNotFoundException {
         try{
             Medicine dbMedicine = medicineService.getMedicine(medicineId);
 
@@ -112,8 +118,30 @@ public class UserServiceImpl implements UserService{
                 }
                 userRepo.save(user);
 
-        }catch (EntityNotFoundException ene){
-            throw new EntityNotFoundException();
+        }catch (UserNotFoundException ene){
+            throw new UserNotFoundException();
+        } catch (MedicineNotFoundException e) {
+            throw new MedicineNotFoundException();
         }
+    }
+
+    @Override
+    public void purchaseMedicines(String email, int medicineId,int quantity,double totalAmount) throws MedicineNotFoundException, MedicineInActiveException {
+
+        try{
+            Medicine medicine = medicineService.getMedicine(medicineId);
+            if(medicine.isActive()){
+                Purchase purchase = new Purchase(medicine,quantity,totalAmount);
+
+            }
+        }catch (EntityNotFoundException ene) {
+            throw new MedicineNotFoundException();
+        }
+
+    }
+
+    @Override
+    public void purchaseMedicines(String email, List<Integer> medicineIds) throws MedicineNotFoundException, MedicineInActiveException {
+
     }
 }
