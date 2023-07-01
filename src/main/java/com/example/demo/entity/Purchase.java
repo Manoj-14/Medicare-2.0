@@ -15,7 +15,7 @@ public class Purchase {
 
     double totalAmount;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment method")
     PaymentMethods paymentMethod;
 
