@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Medicine;
+import com.example.demo.entity.Purchase;
 import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.exception.MedicineNotFoundException;
@@ -24,8 +25,8 @@ public interface UserService {
     @Transactional
     void removeFromCart(String userEmail,int medicineId) throws UserNotFoundException, MedicineNotFoundException;
     @Transactional
-    void purchaseMedicines(String email, int medicineId,int quantity,double totalAmount) throws MedicineNotFoundException,MedicineInActiveException;
+    void purchaseMedicines(String email, Purchase purchase) throws  MedicineInActiveException,UserNotFoundException;
     @Transactional
-    void purchaseMedicines(String email,List<Integer> medicineIds) throws MedicineNotFoundException,MedicineInActiveException;
+    void purchaseMedicines(String email,List<Purchase> purchases) throws MedicineInActiveException, UserNotFoundException;
 
 }

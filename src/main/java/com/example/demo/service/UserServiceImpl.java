@@ -8,6 +8,7 @@ import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.exception.MedicineNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.MedicineRepository;
+import com.example.demo.repository.PurchaseRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.Log;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +27,8 @@ public class UserServiceImpl implements UserService{
     MedicineRepository medicineRepository;
     @Autowired
     MedicineService medicineService;
+    @Autowired
+    PurchaseRepository purchaseRepository;
 
     @Override
     public List<User> findAll() {
@@ -105,7 +108,10 @@ public class UserServiceImpl implements UserService{
 
                 User user = this.findUser(userEmail);
                 if(userRepo.existsByEmailAndCart_Medicines_Id(userEmail,medicineId)){
-                    Cart userCart = userRepo.findCartByEmailAndMedicineId(userEmail,medicineId);
+                    Cart userCart = user.getCart().stream()
+                            .filter(cartItem -> cartItem.getMedicines().getId() == medicineId)
+                            .findFirst()
+                            .orElse(null);
                     if(userCart.getQuantity() == 1){
                         user.getCart().remove(userCart);
                     }
@@ -125,23 +131,36 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    @Transactional
     @Override
-    public void purchaseMedicines(String email, int medicineId,int quantity,double totalAmount) throws MedicineNotFoundException, MedicineInActiveException {
-
+    public void purchaseMedicines(String email, Purchase purchase) throws  MedicineInActiveException,UserNotFoundException {
         try{
-            Medicine medicine = medicineService.getMedicine(medicineId);
-            if(medicine.isActive()){
-                Purchase purchase = new Purchase(medicine,quantity,totalAmount);
-
+            Medicine dbMedicine = purchase.getMedicine();
+            User user = this.findUser(email);
+            if(dbMedicine.isActive()){
+                purchaseRepository.save(purchase);
+                user.getPurchases().add(purchase);
             }
-        }catch (EntityNotFoundException ene) {
-            throw new MedicineNotFoundException();
+            userRepo.save(user);
+        }catch (MedicineInActiveException mie){
+            throw new MedicineInActiveException("Medicine is inactive");
+        }catch (UserNotFoundException une){
+            throw une;
         }
-
     }
 
     @Override
-    public void purchaseMedicines(String email, List<Integer> medicineIds) throws MedicineNotFoundException, MedicineInActiveException {
-
+    public void purchaseMedicines(String email, List<Purchase> purchases) throws MedicineInActiveException,UserNotFoundException {
+        try{
+            User user = this.findUser(email);
+            for(Purchase purchase: purchases){
+                user.getPurchases().add(purchase);
+            }
+            userRepo.save(user);
+        }catch (MedicineInActiveException mie){
+            throw new MedicineInActiveException("Medicine is inactive");
+        }catch (UserNotFoundException une){
+            throw une;
+        }
     }
 }

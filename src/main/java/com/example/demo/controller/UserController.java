@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Purchase;
 import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.exception.MedicineNotFoundException;
@@ -7,8 +8,10 @@ import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.service.UserService;
 import com.example.demo.service.UserServiceImpl;
 import com.example.demo.utils.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.Response;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Map;
 
-//TODO Controllers need to be added
-// -purchase
-// -paymentGateway
 
 @RestController
 @RequestMapping("/api/users")
@@ -92,6 +92,37 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/purchase")
+    public ResponseEntity<?> purchaseMedicine(@NotNull @RequestBody Map<String,Object> request){
+        String email = (String) request.get("email");
+        Map<String,Object> purchaseMap = (Map<String, Object>)request.get("purchase");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Purchase purchase = objectMapper.convertValue(purchaseMap, Purchase.class);
+        Log.INFO(purchaseMap.toString());
+        try {
+            userService.purchaseMedicines(email,purchase);
+            return new ResponseEntity<>("Medicine purchased successfully",HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User Not found");
+        }catch (MedicineInActiveException mae){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Medicine is inactive");
+        }
+    }
+
+    @PutMapping("/purchases")
+    public ResponseEntity<?> purchaseMedicines(@NotNull @RequestBody Map<String,?> request){
+        String email = (String) request.get("email");
+        List<Purchase> purchase = (List<Purchase>) request.get("purchase");
+        try {
+            userService.purchaseMedicines(email,purchase);
+            return new ResponseEntity<>("Medicines purchased successfully",HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User Not found");
+        }catch (MedicineInActiveException mae){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Medicine is inactive");
         }
     }
 }
