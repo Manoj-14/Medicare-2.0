@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.exception.MedicineNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.mapper.PurchaseMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -25,8 +26,8 @@ public interface UserService {
     @Transactional
     void removeFromCart(String userEmail,int medicineId) throws UserNotFoundException, MedicineNotFoundException;
     @Transactional
-    void purchaseMedicines(String email, Purchase purchase) throws  MedicineInActiveException,UserNotFoundException;
+    void purchaseMedicines(String email, int medicineId, int quantity,double totalAmount) throws  MedicineInActiveException,UserNotFoundException;
     @Transactional
-    void purchaseMedicines(String email,List<Purchase> purchases) throws MedicineInActiveException, UserNotFoundException;
+    void purchaseMedicines(String email,List<PurchaseMapper> purchases) throws MedicineInActiveException, UserNotFoundException, MedicineNotFoundException;
 
 }

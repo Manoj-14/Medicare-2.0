@@ -7,6 +7,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.MedicineInActiveException;
 import com.example.demo.exception.MedicineNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.mapper.PurchaseMapper;
 import com.example.demo.repository.MedicineRepository;
 import com.example.demo.repository.PurchaseRepository;
 import com.example.demo.repository.UserRepository;
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService{
                 }
                 else {
                     Cart newCart = new Cart(dbMedicine , 1);
-                    Log.INFO(newCart.toString());
+                    Log.INFO(this,newCart.toString());
                     user.getCart().add(newCart);
                 }
                 userRepo.save(user);
@@ -133,27 +134,38 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     @Override
-    public void purchaseMedicines(String email, Purchase purchase) throws  MedicineInActiveException,UserNotFoundException {
+    public void purchaseMedicines(String email, int medicineId, int quantity,double totalAmount) throws  MedicineInActiveException,UserNotFoundException {
         try{
-            Medicine dbMedicine = purchase.getMedicine();
+            Medicine dbMedicine = medicineService.getMedicine(medicineId);
             User user = this.findUser(email);
+            Log.INFO(this,"DB Medicine:"+dbMedicine.toString());
             if(dbMedicine.isActive()){
-                purchaseRepository.save(purchase);
-                user.getPurchases().add(purchase);
+                Purchase newPurchase = new Purchase(dbMedicine,quantity,totalAmount);
+                purchaseRepository.save(newPurchase);
+                Log.INFO(this,purchaseRepository.findById(newPurchase.getId()).toString());
+                user.getPurchases().add(newPurchase);
+            }
+            else{
+                throw new MedicineInActiveException("Medicine is in active");
             }
             userRepo.save(user);
         }catch (MedicineInActiveException mie){
             throw new MedicineInActiveException("Medicine is inactive");
         }catch (UserNotFoundException une){
             throw une;
+        } catch (MedicineNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void purchaseMedicines(String email, List<Purchase> purchases) throws MedicineInActiveException,UserNotFoundException {
+    public void purchaseMedicines(String email, List<PurchaseMapper> purchases) throws MedicineInActiveException, UserNotFoundException, MedicineNotFoundException {
         try{
             User user = this.findUser(email);
-            for(Purchase purchase: purchases){
+            for(PurchaseMapper purchaseMap: purchases){
+                Log.INFO(this,purchaseMap.toString());
+                Medicine medicine = medicineService.getMedicine(purchaseMap.getMedicineId());
+                Purchase purchase = new Purchase(medicine,purchaseMap.getQuantity(),purchaseMap.getTotalAmount());
                 user.getPurchases().add(purchase);
             }
             userRepo.save(user);
@@ -161,6 +173,8 @@ public class UserServiceImpl implements UserService{
             throw new MedicineInActiveException("Medicine is inactive");
         }catch (UserNotFoundException une){
             throw une;
+        } catch (MedicineNotFoundException e) {
+            throw new MedicineNotFoundException();
         }
     }
 }
