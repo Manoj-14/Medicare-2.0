@@ -9,6 +9,7 @@ import com.project.medicare.service.UserService;
 import com.project.medicare.utils.Log;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,12 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody User user ){
-        int id = userService.create(user);
-        return new ResponseEntity<>("User "+id+" is created successfully",HttpStatus.OK);
+        try{
+            int id = userService.create(user);
+            return new ResponseEntity<>("User "+id+" is created successfully",HttpStatus.OK);
+        }catch (DuplicateKeyException dke){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User already exists");
+        }
     }
 
     @GetMapping("/{id}")
@@ -46,11 +51,23 @@ public class UserController {
         }catch (UserNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User not found");
         }
-
+    }
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticate(@NotNull @RequestBody Map<String,String> request){
+        String email = request.get("email");
+        String password = request.get("password");
+        try{
+            User user = userService.authenticate(email,password);
+            return new ResponseEntity<>(user,HttpStatus.OK);
+        }catch (UserNotFoundException une){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
+        }
     }
 
     @PutMapping("/changePassword/{id}")
-    public ResponseEntity<?> changePassword(@PathVariable int id,@RequestParam String old_password, @RequestParam String new_password){
+    public ResponseEntity<?> changePassword(@PathVariable int id,@NotNull @RequestBody Map<String,String> request){
+        String old_password = request.get("oldPassword");
+        String new_password = request.get("newPassword");
         try{
             userService.changePassword(id,old_password,new_password);
             return new ResponseEntity<>("Password changed", HttpStatus.OK);

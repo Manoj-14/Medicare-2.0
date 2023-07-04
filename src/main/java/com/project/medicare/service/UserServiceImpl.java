@@ -15,6 +15,7 @@ import com.project.medicare.utils.Log;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -37,9 +38,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int create(User user) {
-        userRepo.save(user);
-        return user.getUser_id();
+    public int create(User user) throws DuplicateKeyException {
+        if(userRepo.existsByEmail(user.getEmail())){
+            throw new DuplicateKeyException("User Already exists");
+        }
+        else{
+            userRepo.save(user);
+            return user.getUser_id();
+        }
     }
 
     @Override
@@ -54,6 +60,13 @@ public class UserServiceImpl implements UserService{
         User user = userRepo.findByEmail(email);
         if(user != null)  return user;
         else throw new UserNotFoundException();
+    }
+
+    @Override
+    public User authenticate(String email, String password) throws UserNotFoundException {
+        User user = userRepo.findUserByEmailAndPassword(email, password);
+        if(user == null) throw new UserNotFoundException();
+        else return user;
     }
 
     @Override

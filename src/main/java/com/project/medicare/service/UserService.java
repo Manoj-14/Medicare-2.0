@@ -16,6 +16,8 @@ public interface UserService {
     int create(User user);
     User findUser(int id) throws UserNotFoundException;
     User findUser(String email) throws UserNotFoundException ;
+
+    User authenticate(String email,String password) throws UserNotFoundException;
     @Transactional
     boolean changePassword(int id, String old_password,String new_password) throws UserNotFoundException , VerifyError;
     @Transactional
