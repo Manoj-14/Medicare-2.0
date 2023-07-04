@@ -19,7 +19,7 @@ public interface MedicineService {
     void enableOrDisable(int id) throws EntityNotFoundException;
 
     @Transactional
-    void update(Medicine medicine) throws EntityCreatingException;
+    void update(Medicine medicine) throws EntityCreatingException,MedicineNotFoundException;
 
     Medicine getMedicine(int id) throws MedicineNotFoundException;
 

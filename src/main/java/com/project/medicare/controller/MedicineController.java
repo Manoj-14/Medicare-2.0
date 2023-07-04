@@ -5,6 +5,7 @@ import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.service.MedicineService;
 import jakarta.persistence.EntityNotFoundException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,18 @@ public class MedicineController {
             return new ResponseEntity<>(medicine,HttpStatus.CREATED);
         } catch (EntityCreatingException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@NotNull @RequestBody Medicine medicine){
+        try{
+            medicineService.update(medicine);
+            return new ResponseEntity<>(medicine.getName()+" Updated successfully",HttpStatus.OK);
+        } catch (EntityCreatingException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
+        } catch (MedicineNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         }
     }
 

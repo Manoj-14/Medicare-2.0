@@ -51,9 +51,14 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     @Transactional
-    public void update(Medicine medicine) throws EntityCreatingException{
+    public void update(Medicine medicine) throws EntityCreatingException,MedicineNotFoundException{
         try{
-            medicineRepository.save(medicine);
+            if(medicineRepository.existsById(medicine.getId())){
+                medicineRepository.save(medicine);
+            }
+            else{
+                throw new MedicineNotFoundException();
+            }
         }catch (Exception ec){
             throw new EntityCreatingException("Error in updating medicine");
         }
