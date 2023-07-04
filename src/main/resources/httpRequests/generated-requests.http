@@ -1,0 +1,207 @@
+###
+GET http://localhost:8088/api/users/
+
+<> 2023-07-04T114410.200.json
+<> 2023-07-04T103602.200.json
+
+###
+POST http://localhost:8088/api/users/create
+Content-Type: application/json
+
+{
+  "name" : "Manoj M",
+  "email":"manoj@gmail.com",
+  "password" : "Manoj@14"
+}
+
+<> 2023-07-04T114411.200.txt
+<> 2023-07-04T103602.406.json
+<> 2023-07-04T103458.406.json
+<> 2023-07-01T111814.200.txt
+<> 2023-06-29T085722.200.txt
+
+###
+GET http://localhost:8088/api/users/{{userId}}
+
+<> 2023-07-04T114413.200.json
+<> 2023-07-04T103603.200.json
+<> 2023-07-04T103458.200.json
+
+###
+POST http://localhost:8088/api/users/authenticate
+Content-Type: application/json
+
+{
+  "email": "manoj@gmail.com",
+  "password": "ManojM@14"
+}
+
+<> 2023-07-04T114414.404.json
+<> 2023-07-04T103603-1.200.json
+<> 2023-07-04T103459.200.json
+
+###
+PUT http://localhost:8088/api/users/changePassword/{{userId}}
+Content-Type: application/json
+
+{
+  "oldPassword": "Manoj@14",
+  "newPassword": "ManojM@14"
+}
+
+<> 2023-07-04T114414.200.txt
+<> 2023-07-04T103604.401.json
+<> 2023-07-04T103459.401.json
+
+###Admin
+POST http://localhost:8088/api/admin/create
+Content-Type: application/json
+
+{
+  "name": "Admin",
+  "email": "admin@gmail.com",
+  "password": "Admin@123"
+}
+
+<> 2023-07-04T114414.201.txt
+<> 2023-07-04T103604.406.json
+<> 2023-07-04T103459.406.json
+
+###
+GET http://localhost:8088/api/admin/{{adminEmail}}
+
+<> f-5.txt
+<> f-4.txt
+<> f-6.txt
+
+###
+POST http://localhost:8088/api/admin/authenticate/{{adminEmail}}
+Content-Type: application/json
+
+{
+  "password": "Admin@123"
+}
+
+<> f-7.txt
+
+###
+GET http://localhost:8088/api/medicines/
+
+<> 2023-07-04T114415.200.json
+<> 2023-07-04T103605.200.json
+<> 2023-07-04T103500.200.json
+
+###
+POST http://localhost:8088/api/medicines/create
+Content-Type: application/json
+
+{
+  "name": "MedName",
+  "price": 20.00,
+  "seller": "MedSel",
+  "description": "Desc"
+}
+
+<> 2023-07-04T114415.201.json
+<> 2023-07-04T103605.201.json
+<> 2023-07-04T103501.201.json
+
+###
+PUT http://localhost:8088/api/medicines/update
+Content-Type: application/json
+
+{
+  "id": {{medicineId}},
+  "name": "NewMedName",
+  "price": 50.00,
+  "seller": "MedSel",
+  "description": "Desc"
+}
+
+<> 2023-07-04T114416.200.txt
+
+###
+GET http://localhost:8088/api/medicines/{{medicineId}}
+
+<> 2023-07-04T114450.200.json
+<> 2023-07-04T114416.200.json
+<> 2023-07-04T103605-1.200.json
+<> 2023-07-04T103501.200.json
+
+###
+GET http://localhost:8088/api/medicines/isenabled?enable={{medicineId}}
+
+<> 2023-07-04T114416-1.200.txt
+<> 2023-07-04T103606.200.txt
+<> 2023-07-04T103501.200.txt
+
+###
+POST http://localhost:8088/api/medicines/delete/{{id}}
+
+<> 2023-07-04T114416.404.json
+<> 2023-07-04T102543-1.200.txt
+<> 2023-07-04T102525.404.json
+<> 2023-07-04T102356-1.200.txt
+
+###
+PUT http://localhost:8088/api/users/addToCart/{{medicineId}}
+Content-Type: application/json
+
+{
+  "email": "manoj@gmail.com"
+}
+
+<> 2023-07-04T114417.200.txt
+<> 2023-07-04T103606.500.json
+<> 2023-07-04T103502.406.json
+
+###
+PUT http://localhost:8088/api/users/removeToCart/{{medicineId}}
+Content-Type: application/json
+
+{
+  "email": "manoj@gmail.com"
+}
+
+<> 2023-07-04T114417-1.200.txt
+<> 2023-07-04T103607.500.json
+<> 2023-07-04T103502.500.json
+
+###
+PUT http://localhost:8088/api/users/purchase
+Content-Type: application/json
+
+{
+  "email":"manoj@gmail.com",
+  "medicineId": {{medicineId}},
+  "quantity": 1,
+  "totalAmount": 300.0
+
+}
+
+<> 2023-07-04T114417-2.200.txt
+<> 2023-07-04T103607.200.txt
+<> 2023-07-04T103502-1.406.json
+
+###
+PUT http://localhost:8088/api/users/purchases
+Content-Type: application/json
+
+{
+  "email": "manoj@gmail.com",
+  "purchases": [
+  {
+    "medicineId": {{medicineId}},
+    "quantity": 1,
+    "totalAmount": 300.0
+  },{
+    "medicineId": {{id}},
+    "quantity": 2,
+    "totalAmount": 600.0
+  }
+  ]
+}
+
+<> 2023-07-04T114418.406.json
+<> 2023-07-04T103607-1.200.txt
+<> 2023-07-04T103503.200.txt
