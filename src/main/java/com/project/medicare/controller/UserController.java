@@ -36,7 +36,7 @@ public class UserController {
     public ResponseEntity<?> create(@RequestBody User user ){
         try{
             int id = userService.create(user);
-            return new ResponseEntity<>("User "+id+" is created successfully",HttpStatus.OK);
+            return new ResponseEntity<>(id,HttpStatus.OK);
         }catch (DuplicateKeyException dke){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User already exists");
         }
