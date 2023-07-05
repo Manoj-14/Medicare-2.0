@@ -101,9 +101,9 @@ public class UserController {
             userService.removeFromCart(email,medicineId);
             return new ResponseEntity<>("Removed from cart",HttpStatus.OK);
         }catch (MedicineNotFoundException ene){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }
     }
 
