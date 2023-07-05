@@ -1,10 +1,12 @@
 package com.project.medicare.controller;
 
 import com.project.medicare.entity.Admin;
+import com.project.medicare.exception.UserNotFoundException;
 import com.project.medicare.service.AdminService;
 import com.project.medicare.utils.Log;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +31,12 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<?> getAdmin(@PathVariable String email){
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAdmin(@PathVariable int id){
         try{
-            Admin admin = adminService.find(email);
+            Admin admin = adminService.find(id);
             return new ResponseEntity<>(admin, HttpStatus.OK);
-        }catch (EntityNotFoundException enf){
+        }catch (UserNotFoundException enf){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         }
     }
@@ -51,5 +53,18 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/changePassword/{id}")
+    public ResponseEntity<?> changePassword(@PathVariable int id,@NotNull @RequestBody Map<String,String> request){
+        String old_password = request.get("oldPassword");
+        String new_password = request.get("newPassword");
+        try{
+            adminService.changePassword(id,old_password,new_password);
+            return new ResponseEntity<>("Password changed", HttpStatus.OK);
+        } catch (VerifyError ve){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Password not matched");
+        } catch (EntityNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Admin not found");
+        }
+    }
 
 }

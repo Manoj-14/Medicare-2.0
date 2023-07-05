@@ -1,6 +1,7 @@
 package com.project.medicare.service;
 
 import com.project.medicare.entity.Admin;
+import com.project.medicare.exception.UserNotFoundException;
 import com.project.medicare.repository.AdminRepository;
 import com.project.medicare.utils.Log;
 import jakarta.persistence.EntityExistsException;
@@ -33,6 +34,16 @@ public class AdminServiceImpl implements AdminService {
         Admin admin = adminRepository.findAdminByEmail(email);
         if(admin.equals(null)){
             throw new EntityNotFoundException();
+        }else{
+            return admin;
+        }
+    }
+
+    @Override
+    public Admin find(int id) throws UserNotFoundException {
+        Admin admin = adminRepository.findById(id);
+        if(admin.equals(null)){
+            throw new UserNotFoundException();
         }else{
             return admin;
         }
