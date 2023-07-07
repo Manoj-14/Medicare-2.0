@@ -62,7 +62,7 @@ public class MedicineController {
         }
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable int id){
         try{
             medicineService.remove(id);
@@ -72,7 +72,7 @@ public class MedicineController {
         }
     }
 
-    @GetMapping("/isenabled")
+    @PutMapping("/isenabled")
     public ResponseEntity<?> enableOrDisabled(@RequestParam int enable){
         try{
             medicineService.enableOrDisable(enable);
