@@ -1,17 +1,25 @@
 package com.project.medicare.controller;
 
+import com.project.medicare.entity.Image;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.service.MedicineService;
+import com.project.medicare.utils.Log;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -40,13 +48,27 @@ public class MedicineController {
         }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Medicine medicine){
+    @PostMapping(value = "/create",consumes = "multipart/form-data")
+    public ResponseEntity<?> create(@RequestParam String name,@RequestParam String description,@RequestParam double price,@RequestParam String seller,@RequestParam MultipartFile image){
+        Log.logger.info(image.toString());
+        Log.logger.info(name);
+        Log.logger.info(description);
+        Log.logger.info(seller);
+        Log.logger.info(price+"");
+        Medicine medicine = new Medicine();
+        medicine.setName(name);
+        medicine.setDescription(description);
+        medicine.setPrice(price);
+        medicine.setSeller(seller);
         try{
-            Medicine addedMedicine = medicineService.add(medicine);
-            return new ResponseEntity<>(medicine,HttpStatus.CREATED);
+            Image newImage = new Image(image.getName(), image.getContentType(), image.getBytes());
+            medicine.setImage(newImage);
+            Medicine dbMedicine = medicineService.add(medicine);
+            return new ResponseEntity<>(dbMedicine,HttpStatus.OK);
+        }catch (IOException ioe){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"File upload error");
         } catch (EntityCreatingException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Unable to create medicine");
         }
     }
 

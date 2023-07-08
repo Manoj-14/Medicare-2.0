@@ -1,10 +1,5 @@
 package com.project.medicare.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 
 @Entity
 public class Medicine {
@@ -16,6 +11,8 @@ public class Medicine {
     double price;
     String seller;
     String description;
+    @Embedded
+    Image image;
     @Column(columnDefinition = "boolean default true")
     boolean active;
 
@@ -23,11 +20,13 @@ public class Medicine {
 
     }
 
-    public Medicine(String name, double price, String seller, String description) {
+    public Medicine(String name, double price, String seller, String description, Image image, boolean active) {
         this.name = name;
         this.price = price;
         this.seller = seller;
         this.description = description;
+        this.image = image;
+        this.active = active;
     }
 
     public int getId() {
@@ -78,10 +77,25 @@ public class Medicine {
         this.active = active;
     }
 
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
-        return "Medicine [id=" + id + ", name=" + name + ", price=" + price + ", seller=" + seller + ", description="
-                + description + "]";
+        return "Medicine{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", seller='" + seller + '\'' +
+                ", description='" + description + '\'' +
+                ", image=" + image +
+                ", active=" + active +
+                '}';
     }
 }
 
