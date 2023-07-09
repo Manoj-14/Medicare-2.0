@@ -50,11 +50,6 @@ public class MedicineController {
 
     @PostMapping(value = "/create",consumes = "multipart/form-data")
     public ResponseEntity<?> create(@RequestParam String name,@RequestParam String description,@RequestParam double price,@RequestParam String seller,@RequestParam MultipartFile image){
-        Log.logger.info(image.toString());
-        Log.logger.info(name);
-        Log.logger.info(description);
-        Log.logger.info(seller);
-        Log.logger.info(price+"");
         Medicine medicine = new Medicine();
         medicine.setName(name);
         medicine.setDescription(description);
