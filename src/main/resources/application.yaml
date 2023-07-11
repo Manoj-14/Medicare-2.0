@@ -1,0 +1,6 @@
+security:
+  jwt:
+    secret-key: lkdslidsfewaimxewurhnweuhnrq3o4hre
+
+server:
+  port: 8088
