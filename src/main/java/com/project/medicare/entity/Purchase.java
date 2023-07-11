@@ -1,12 +1,14 @@
 package com.project.medicare.entity;
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
+    UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     Medicine medicine;
@@ -44,11 +46,11 @@ public class Purchase {
         this.paymentMethod = paymentMethod;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
