@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     List<User> findAll();
@@ -17,7 +18,7 @@ public interface UserService {
     User findUser(int id) throws UserNotFoundException;
     User findUser(String email) throws UserNotFoundException ;
 
-    User authenticate(String email,String password) throws UserNotFoundException;
+    Map<String, String> authenticate(String email, String password) throws UserNotFoundException;
     @Transactional
     boolean changePassword(int id, String old_password,String new_password) throws UserNotFoundException , VerifyError;
     @Transactional

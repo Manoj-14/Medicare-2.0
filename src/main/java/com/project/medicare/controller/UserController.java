@@ -26,7 +26,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/")
+    @GetMapping()
     public ResponseEntity<?> getAll(){
         List<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
@@ -57,7 +57,7 @@ public class UserController {
         String email = request.get("email");
         String password = request.get("password");
         try{
-            User user = userService.authenticate(email,password);
+            Map user = userService.authenticate(email,password);
             return new ResponseEntity<>(user,HttpStatus.OK);
         }catch (UserNotFoundException une){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");

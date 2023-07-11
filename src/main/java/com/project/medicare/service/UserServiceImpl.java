@@ -1,5 +1,6 @@
 package com.project.medicare.service;
 
+import com.project.medicare.config.JwtIssuer;
 import com.project.medicare.entity.Cart;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.entity.Purchase;
@@ -17,7 +18,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -31,10 +35,12 @@ public class UserServiceImpl implements UserService{
     MedicineService medicineService;
     @Autowired
     PurchaseRepository purchaseRepository;
+    @Autowired
+    private JwtIssuer jwtIssuer;
 
     @Override
     public List<User> findAll() {
-        return (List<User>) userRepo.findAll();
+        return userRepo.findAll();
     }
 
     @Override
@@ -63,10 +69,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User authenticate(String email, String password) throws UserNotFoundException {
+    public Map<String, String> authenticate(String email, String password) throws UserNotFoundException {
         User user = userRepo.findUserByEmailAndPassword(email, password);
         if(user == null) throw new UserNotFoundException();
-        else return user;
+        else {
+            Map<String, String> response = new HashMap<>();
+            response.put("jwt",jwtIssuer.issue(user.getUser_id(),email,user));
+            return response;
+        }
     }
 
     @Override
