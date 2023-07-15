@@ -24,7 +24,7 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void getAllUsers() throws Exception{
-        ResponseEntity<List> response = this.testRestTemplate.getForEntity("http://localhost:"+this.port+"/api/users/",List.class);
+        ResponseEntity<List> response = this.testRestTemplate.getForEntity("http://localhost:"+this.port+"/api/users",List.class);
         MatcherAssert.assertThat(response.getStatusCode(), CoreMatchers.equalTo(HttpStatus.OK));
     }
 

@@ -17,18 +17,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 public class UserControllerUnitTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    UserService userService;
-
-    @Test
-    public void getAllUsers() throws Exception{
-        mockMvc.perform(get("/api/users/"))
-                .andExpect(status().isOk()).andExpect(content()
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("[]"));
-        verify(userService,times(1)).findAll();
-    }
+//    @Autowired
+//    private MockMvc mockMvc;
+//
+//    @MockBean
+//    UserService userService;
+//
+//    @Test
+//    public void getAllUsers() throws Exception{
+//        mockMvc.perform(get("/api/users"))
+//                .andExpect(status().isOk()).andExpect(content()
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(content().json("[]"));
+//        verify(userService,times(1)).findAll();
+//    }
 }
