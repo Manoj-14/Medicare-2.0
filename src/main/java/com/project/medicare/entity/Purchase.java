@@ -1,9 +1,11 @@
 package com.project.medicare.entity;
 import jakarta.persistence.*;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.UUID;
 
 @Entity
+@RedisHash("purchaseCache")
 public class Purchase {
 
     @Id
