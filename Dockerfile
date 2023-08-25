@@ -1,4 +1,4 @@
-FROM openjdk:17-oracle
+FROM openjdk:17-slim
 EXPOSE 8088
 ARG APP_NAME="Medicare"
 ARG APP_VERSION="0.0.1-SNAPSHOT"

@@ -54,7 +54,13 @@ public class MedicineServiceImpl implements MedicineService {
     public void update(Medicine medicine) throws EntityCreatingException,MedicineNotFoundException{
         try{
             if(medicineRepository.existsById(medicine.getId())){
-                medicineRepository.save(medicine);
+                Medicine dbMedicine = medicineRepository.findById(medicine.getId());
+                dbMedicine.setName(medicine.getName());
+                dbMedicine.setDescription(medicine.getDescription());
+                dbMedicine.setQuantity(medicine.getQuantity());
+                dbMedicine.setSeller(medicine.getSeller());
+                dbMedicine.setPrice(medicine.getPrice());
+                medicineRepository.save(dbMedicine);
             }
             else{
                 throw new MedicineNotFoundException();

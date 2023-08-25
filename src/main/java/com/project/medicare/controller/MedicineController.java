@@ -28,7 +28,7 @@ public class MedicineController {
 
     @Autowired
     MedicineService medicineService;
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll(){
         try{
             List<Medicine> medicines = medicineService.getMedicines();
@@ -49,12 +49,13 @@ public class MedicineController {
     }
 
     @PostMapping(value = "/create",consumes = "multipart/form-data")
-    public ResponseEntity<?> create(@RequestParam String name,@RequestParam String description,@RequestParam double price,@RequestParam String seller,@RequestParam MultipartFile image){
+    public ResponseEntity<?> create(@RequestParam String name,@RequestParam String description, @RequestParam int quantity,@RequestParam double price,@RequestParam String seller,@RequestParam MultipartFile image){
         Medicine medicine = new Medicine();
         medicine.setName(name);
         medicine.setDescription(description);
         medicine.setPrice(price);
         medicine.setSeller(seller);
+        medicine.setQuantity(quantity);
         try{
             Image newImage = new Image(image.getName(), image.getContentType(), image.getBytes());
             medicine.setImage(newImage);
@@ -71,7 +72,7 @@ public class MedicineController {
     public ResponseEntity<?> update(@NotNull @RequestBody Medicine medicine){
         try{
             medicineService.update(medicine);
-            return new ResponseEntity<>(medicine.getName()+" Updated successfully",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityCreatingException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
         } catch (MedicineNotFoundException e) {
@@ -83,9 +84,9 @@ public class MedicineController {
     public ResponseEntity<?> delete(@PathVariable int id){
         try{
             medicineService.remove(id);
-            return new ResponseEntity<>("Successfully Deleted",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (EntityNotFoundException ene){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         }
     }
 
@@ -93,7 +94,7 @@ public class MedicineController {
     public ResponseEntity<?> enableOrDisabled(@RequestParam int enable){
         try{
             medicineService.enableOrDisable(enable);
-            return new ResponseEntity<>("Success",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (EntityNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

@@ -1,0 +1,23 @@
+version: '1.0.0'
+
+services:
+  app:
+    image: manojmdocker14/medicare:1.0.0
+    ports:
+      - 8088:8088
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/medicare?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    environment:
+      DATABASE_HOST: some-mysql
+      DATABASE_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: medicare
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root

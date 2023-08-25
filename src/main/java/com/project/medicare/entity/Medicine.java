@@ -8,6 +8,7 @@ public class Medicine {
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
     String name;
+    int quantity;
     double price;
     String seller;
     String description;
@@ -20,8 +21,10 @@ public class Medicine {
 
     }
 
-    public Medicine(String name, double price, String seller, String description, Image image, boolean active) {
+    public Medicine(int id, String name, int quantity, double price, String seller, String description, Image image, boolean active) {
+        this.id = id;
         this.name = name;
+        this.quantity = quantity;
         this.price = price;
         this.seller = seller;
         this.description = description;
@@ -85,11 +88,20 @@ public class Medicine {
         this.image = image;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
         return "Medicine{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", quantity=" + quantity +
                 ", price=" + price +
                 ", seller='" + seller + '\'' +
                 ", description='" + description + '\'' +
