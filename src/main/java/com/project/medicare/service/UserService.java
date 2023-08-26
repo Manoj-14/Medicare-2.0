@@ -6,6 +6,7 @@ import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.exception.UserNotFoundException;
 import com.project.medicare.mapper.PurchaseMapper;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface UserService {
     @Transactional
     int create(User user);
     User findUser(int id) throws UserNotFoundException;
-    User findUser(String email) throws UserNotFoundException ;
+    User findUser(String email) throws UsernameNotFoundException;
 
     User authenticate(String email, String password) throws UserNotFoundException;
     @Transactional

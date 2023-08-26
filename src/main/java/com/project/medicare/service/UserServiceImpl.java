@@ -16,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,10 +58,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User findUser(String email) throws UserNotFoundException {
+    public User findUser(String email) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(email);
         if(user != null)  return user;
-        else throw new UserNotFoundException();
+        else throw new UsernameNotFoundException("Email Not found");
     }
 
     @Override
@@ -113,8 +114,6 @@ public class UserServiceImpl implements UserService{
             }
         }catch (MedicineNotFoundException ene){
             throw new MedicineNotFoundException();
-        }catch (UserNotFoundException ene){
-            throw new UserNotFoundException();
         }
     }
 
@@ -142,8 +141,6 @@ public class UserServiceImpl implements UserService{
                 }
                 userRepo.save(user);
 
-        }catch (UserNotFoundException ene){
-            throw new UserNotFoundException();
         } catch (MedicineNotFoundException e) {
             throw new MedicineNotFoundException();
         }
@@ -168,8 +165,6 @@ public class UserServiceImpl implements UserService{
             userRepo.save(user);
         }catch (MedicineInActiveException mie){
             throw new MedicineInActiveException("Medicine is inactive");
-        }catch (UserNotFoundException une){
-            throw une;
         } catch (MedicineNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -188,8 +183,6 @@ public class UserServiceImpl implements UserService{
             userRepo.save(user);
         }catch (MedicineInActiveException mie){
             throw new MedicineInActiveException("Medicine is inactive");
-        }catch (UserNotFoundException une){
-            throw une;
         } catch (MedicineNotFoundException e) {
             throw new MedicineNotFoundException();
         }
