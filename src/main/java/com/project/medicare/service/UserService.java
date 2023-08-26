@@ -18,9 +18,9 @@ public interface UserService {
     User findUser(int id) throws UserNotFoundException;
     User findUser(String email) throws UserNotFoundException ;
 
-    Map<String, String> authenticate(String email, String password) throws UserNotFoundException;
+    User authenticate(String email, String password) throws UserNotFoundException;
     @Transactional
-    boolean changePassword(int id, String old_password,String new_password) throws UserNotFoundException , VerifyError;
+    void changePassword(int id, String old_password,String new_password) throws UserNotFoundException , VerifyError;
     @Transactional
     void addToCart(String userEmail,int medicineId) throws MedicineNotFoundException, MedicineInActiveException, UserNotFoundException;
     @Transactional

@@ -1,6 +1,5 @@
 package com.project.medicare.service;
 
-import com.project.medicare.config.JwtIssuer;
 import com.project.medicare.entity.Cart;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.entity.Purchase;
@@ -19,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -35,8 +32,6 @@ public class UserServiceImpl implements UserService{
     MedicineService medicineService;
     @Autowired
     PurchaseRepository purchaseRepository;
-    @Autowired
-    private JwtIssuer jwtIssuer;
 
     @Override
     public List<User> findAll() {
@@ -69,18 +64,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Map<String, String> authenticate(String email, String password) throws UserNotFoundException {
+    public User authenticate(String email, String password) throws UserNotFoundException {
         User user = userRepo.findUserByEmailAndPassword(email, password);
         if(user == null) throw new UserNotFoundException();
         else {
-            Map<String, String> response = new HashMap<>();
-            response.put("jwt",jwtIssuer.issue(user.getUser_id(),email,user));
-            return response;
+            return user;
         }
     }
 
     @Override
-    public boolean changePassword(int id, String old_password, String new_password) throws UserNotFoundException, VerifyError {
+    public void changePassword(int id, String old_password, String new_password) throws UserNotFoundException, VerifyError {
         User user = userRepo.findById(id);
         if(user == null) throw new UserNotFoundException();
         else{
@@ -90,7 +83,6 @@ public class UserServiceImpl implements UserService{
             else{
                 user.setPassword(new_password);
                 userRepo.save(user);
-                return true;
             }
         }
     }
