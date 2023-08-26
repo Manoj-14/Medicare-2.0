@@ -1,6 +1,6 @@
 security:
   jwt:
-    secret-key: lkdslidsfewaimxewurhnweuhnrq3o4hre
+    secret-key: ${JWT_SECRET_KEY}
 
 server:
   port: 8088
