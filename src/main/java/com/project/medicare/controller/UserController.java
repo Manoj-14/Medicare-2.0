@@ -1,5 +1,6 @@
 package com.project.medicare.controller;
 
+import com.project.medicare.dto.UserDto;
 import com.project.medicare.entity.User;
 import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +35,14 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody User user ){
+    public ResponseEntity<?> create(@RequestBody UserDto user ){
         try{
-            int id = userService.create(user);
-            return new ResponseEntity<>(id,HttpStatus.OK);
+            UserDto userResp = userService.create(user);
+            return new ResponseEntity<>(userResp,HttpStatus.OK);
         }catch (DuplicateKeyException dke){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User already exists");
+        } catch (NoSuchAlgorithmException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Error Found");
         }
     }
 
