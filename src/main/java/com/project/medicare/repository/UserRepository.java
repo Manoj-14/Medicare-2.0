@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     boolean existsByEmail(String email);
     User findById(int id);
     User findByEmail(String email);
-    User findUserByEmailAndPassword(String email,String password);
+    User findUserByEmailAndPassword(String email,byte[] password);
     boolean existsByEmailAndCart_Medicines_Id(String email , int medicineId);
     @Query("SELECT cart FROM User user JOIN user.cart cart JOIN cart.medicines medicine WHERE user.email = :userEmail AND medicine.id = :medicineId")
     Cart findCartByEmailAndMedicineId(String userEmail, int medicineId);

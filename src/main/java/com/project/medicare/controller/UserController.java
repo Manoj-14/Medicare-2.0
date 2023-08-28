@@ -1,9 +1,14 @@
 package com.project.medicare.controller;
 
+import com.project.medicare.authentication.AuthenticationRequest;
+import com.project.medicare.authentication.AuthenticationResponse;
+import com.project.medicare.dto.UserDto;
 import com.project.medicare.entity.User;
 import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.exception.UserNotFoundException;
+import com.project.medicare.jwt.service.ApplicationUserDetailsService;
+import com.project.medicare.jwt.utils.JwtUtil;
 import com.project.medicare.mapper.PurchaseMedicinesRequestMapper;
 import com.project.medicare.service.UserService;
 import com.project.medicare.utils.Log;
@@ -12,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +31,15 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
+
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtTokenUtil;
+
+    @Autowired
+    private ApplicationUserDetailsService userDetailsService;
 
     @GetMapping()
     public ResponseEntity<?> getAll(){
@@ -33,12 +48,14 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody User user ){
+    public ResponseEntity<?> create(@RequestBody UserDto user ){
         try{
-            int id = userService.create(user);
-            return new ResponseEntity<>(id,HttpStatus.OK);
+            UserDto userResp = userService.create(user);
+            return new ResponseEntity<>(userResp,HttpStatus.OK);
         }catch (DuplicateKeyException dke){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"User already exists");
+        } catch (NoSuchAlgorithmException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Error Found");
         }
     }
 
@@ -53,15 +70,18 @@ public class UserController {
         }
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@NotNull @RequestBody Map<String,String> request){
-        String email = request.get("email");
-        String password = request.get("password");
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthenticationResponse authenticate(@NotNull @RequestBody AuthenticationRequest request){
+        User user;
         try{
-            User user = userService.authenticate(email,password);
-            return new ResponseEntity<>(user,HttpStatus.OK);
-        }catch (UserNotFoundException une){
+            user = userDetailsService.authenticate(request.getEmail(),request.getPassword());
+        }catch (NoSuchAlgorithmException une){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }
+        var userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        System.out.println(userDetails);
+        var jwt = jwtTokenUtil.generateToken(userDetails);
+        return new AuthenticationResponse(jwt);
     }
 
     @PutMapping("/changePassword/{id}")

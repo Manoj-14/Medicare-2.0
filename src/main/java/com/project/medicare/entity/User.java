@@ -1,6 +1,7 @@
 package com.project.medicare.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -10,8 +11,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -19,7 +24,8 @@ public class User {
     int user_id;
     String name;
     String email;
-    String password;
+    byte[] storedSalt;
+    byte[] password;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<Cart> cart = new ArrayList<>();
@@ -27,15 +33,10 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Purchase> purchases = new ArrayList<>();
 
-    public User() {
-
-    }
-
-    public User(String name, String email, String password) {
+    public User(String name, String email) {
         super();
         this.name = name;
         this.email = email;
-        this.password = password;
         this.cart = new ArrayList<>();
     }
 
@@ -63,14 +64,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public List<Cart> getCart() {
         return cart;
     }
@@ -87,13 +80,30 @@ public class User {
         this.purchases = purchases;
     }
 
+    public byte[] getStoredSalt() {
+        return storedSalt;
+    }
+
+    public void setStoredSalt(byte[] storedSalt) {
+        this.storedSalt = storedSalt;
+    }
+
+    public byte[] getPassword() {
+        return password;
+    }
+
+    public void setPassword(byte[] password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "user_id=" + user_id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                ", storedSalt=" + Arrays.toString(storedSalt) +
+                ", password=" + Arrays.toString(password) +
                 ", cart=" + cart +
                 ", purchases=" + purchases +
                 '}';

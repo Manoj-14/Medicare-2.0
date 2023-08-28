@@ -1,5 +1,7 @@
 package com.project.medicare.service;
 
+import com.project.medicare.config.ModelMapperConfig;
+import com.project.medicare.dto.UserDto;
 import com.project.medicare.entity.Cart;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.entity.Purchase;
@@ -14,15 +16,22 @@ import com.project.medicare.repository.UserRepository;
 import com.project.medicare.utils.Log;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService{
 
     @Autowired
@@ -34,19 +43,34 @@ public class UserServiceImpl implements UserService{
     @Autowired
     PurchaseRepository purchaseRepository;
 
+    private final ModelMapper mapper;
+
+    private UserDto entityToDto(User user){
+        return mapper.map(user,UserDto.class);
+    }
+
+    private User dtoToEntity(UserDto userDto){
+        return mapper.map(userDto,User.class);
+    }
+
     @Override
     public List<User> findAll() {
         return userRepo.findAll();
     }
 
     @Override
-    public int create(User user) throws DuplicateKeyException {
+    public UserDto create(UserDto user) throws DuplicateKeyException, NoSuchAlgorithmException {
         if(userRepo.existsByEmail(user.getEmail())){
             throw new DuplicateKeyException("User Already exists");
         }
         else{
-            userRepo.save(user);
-            return user.getUser_id();
+            byte[] salt = createSalt();
+            byte[] hashedPassword = createPasswordHash(user.getPassword(),salt);
+            User userEntity = dtoToEntity(user);
+            userEntity.setStoredSalt(salt);
+            userEntity.setPassword(hashedPassword);
+            userRepo.save(userEntity);
+            return user;
         }
     }
 
@@ -64,9 +88,23 @@ public class UserServiceImpl implements UserService{
         else throw new UsernameNotFoundException("Email Not found");
     }
 
+    private byte[] createSalt() {
+        var random = new SecureRandom();
+        var salt = new byte[128];
+        random.nextBytes(salt);
+        return salt;
+    }
+
+    private byte[] createPasswordHash(String password, byte[] salt) throws NoSuchAlgorithmException {
+        var md = MessageDigest.getInstance("SHA-512");
+        md.update(salt);
+        return md.digest(password.getBytes(StandardCharsets.UTF_8));
+    }
+
     @Override
     public User authenticate(String email, String password) throws UserNotFoundException {
-        User user = userRepo.findUserByEmailAndPassword(email, password);
+//        User user = userRepo.findUserByEmailAndPassword(email, password);
+        User user = new User();
         if(user == null) throw new UserNotFoundException();
         else {
             return user;
@@ -82,7 +120,7 @@ public class UserServiceImpl implements UserService{
                 throw new VerifyError();
             }
             else{
-                user.setPassword(new_password);
+//                user.setPassword(new_password);
                 userRepo.save(user);
             }
         }
