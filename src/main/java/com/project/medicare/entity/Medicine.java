@@ -1,5 +1,8 @@
 package com.project.medicare.entity;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.net.URL;
 
 @Entity
 public class Medicine {
@@ -12,8 +15,8 @@ public class Medicine {
     double price;
     String seller;
     String description;
-    @Embedded
-    Image image;
+    String image;
+    @Value("true")
     @Column(columnDefinition = "boolean default true")
     boolean active;
 
@@ -21,7 +24,7 @@ public class Medicine {
 
     }
 
-    public Medicine(int id, String name, int quantity, double price, String seller, String description, Image image, boolean active) {
+    public Medicine(int id, String name, int quantity, double price, String seller, String description, String image, boolean active) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
@@ -80,11 +83,11 @@ public class Medicine {
         this.active = active;
     }
 
-    public Image getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

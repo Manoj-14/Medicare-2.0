@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Component
 @AllArgsConstructor
@@ -43,12 +45,12 @@ public class AwsBucketService {
         this.amazonS3 = new AmazonS3Client(credentials);
     }
 
-    public String uploadFile(MultipartFile multipartFile) {
+    public String uploadFile(MultipartFile multipartFile,String filename) throws MalformedURLException {
         String fileURL = "";
         try {
             File file = convertMultipartFileToFile(multipartFile);
-            String fileName = multipartFile.getOriginalFilename();
-            fileURL = endpoint + "/" + bucket_name + "/" + fileName;
+            String fileName = filename;
+            fileURL = endpoint + fileName;
             uploadFileToBucket(fileName, file);
             file.delete();
         } catch (Exception e) {

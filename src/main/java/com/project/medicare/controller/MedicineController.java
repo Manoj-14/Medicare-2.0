@@ -64,9 +64,7 @@ public class MedicineController {
         medicine.setSeller(seller);
         medicine.setQuantity(quantity);
         try{
-            System.out.println(awsService.uploadFile(image));
-            Image newImage = new Image(image.getName(), image.getContentType(), image.getBytes());
-            medicine.setImage(newImage);
+            medicine.setImage(awsService.uploadFile(image,medicine.getId()+""));
             Medicine dbMedicine = medicineService.add(medicine);
             return new ResponseEntity<>(dbMedicine,HttpStatus.OK);
         }catch (IOException ioe){
