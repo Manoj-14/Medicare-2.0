@@ -1,5 +1,6 @@
 package com.project.medicare.controller;
 
+import com.project.medicare.aws.AwsBucketService;
 import com.project.medicare.entity.Image;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.exception.EntityCreatingException;
@@ -30,6 +31,10 @@ public class MedicineController {
 
     @Autowired
     MedicineService medicineService;
+
+    @Autowired
+    private AwsBucketService awsService;
+
     @GetMapping
     public ResponseEntity<?> getAll(){
         try{
@@ -59,6 +64,7 @@ public class MedicineController {
         medicine.setSeller(seller);
         medicine.setQuantity(quantity);
         try{
+            System.out.println(awsService.uploadFile(image));
             Image newImage = new Image(image.getName(), image.getContentType(), image.getBytes());
             medicine.setImage(newImage);
             Medicine dbMedicine = medicineService.add(medicine);
