@@ -1,5 +1,6 @@
 package com.project.medicare.service;
 
+import com.project.medicare.aws.AwsBucketService;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,10 +18,16 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Autowired
     MedicineRepository medicineRepository;
+
+    @Autowired
+    AwsBucketService awsService;
+
     @Override
     @Transactional
-    public Medicine add(Medicine medicine) throws EntityCreatingException {
+    public Medicine add(Medicine medicine, MultipartFile image) throws EntityCreatingException {
         try {
+            medicineRepository.save(medicine);
+            medicine.setImage(awsService.uploadFile(image,medicine.getId()+""));
             medicineRepository.save(medicine);
             return medicine;
         }catch (Exception ec){
@@ -32,6 +40,7 @@ public class MedicineServiceImpl implements MedicineService {
         Medicine medicine = medicineRepository.findById(id);
         if(medicine != null){
             medicineRepository.deleteById(id);
+            System.out.println(awsService.deleteFileFromBucket(id+""));
         }
         else {
             throw new EntityNotFoundException();
@@ -42,7 +51,7 @@ public class MedicineServiceImpl implements MedicineService {
     public void enableOrDisable(int id) throws EntityNotFoundException{
         Medicine medicine = medicineRepository.findById(id);
         if(medicine != null){
-            medicine.setActive((medicine.isActive())? false : true);
+            medicine.setActive(!medicine.isActive());
             medicineRepository.save(medicine);
         }else{
             throw new EntityNotFoundException();

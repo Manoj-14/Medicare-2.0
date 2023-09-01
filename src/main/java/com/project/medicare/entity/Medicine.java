@@ -14,6 +14,7 @@ public class Medicine {
     int quantity;
     double price;
     String seller;
+    @Column(length=1000)
     String description;
     String image;
     @Value("true")

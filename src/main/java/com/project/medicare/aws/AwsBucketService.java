@@ -72,7 +72,7 @@ public class AwsBucketService {
     }
 
     public String deleteFileFromBucket(String fileName) {
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket_name, fileName));
+        amazonS3.deleteObject(bucket_name,fileName);
         return "Deletion Successful";
     }
 }

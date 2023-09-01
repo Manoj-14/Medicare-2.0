@@ -5,12 +5,13 @@ import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface MedicineService {
     @Transactional
-    Medicine add(Medicine medicine) throws EntityCreatingException;
+    Medicine add(Medicine medicine, MultipartFile image) throws EntityCreatingException;
 
     @Transactional
     void remove(int id) throws EntityNotFoundException;

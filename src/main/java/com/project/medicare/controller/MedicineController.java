@@ -64,11 +64,8 @@ public class MedicineController {
         medicine.setSeller(seller);
         medicine.setQuantity(quantity);
         try{
-            medicine.setImage(awsService.uploadFile(image,medicine.getId()+""));
-            Medicine dbMedicine = medicineService.add(medicine);
+            Medicine dbMedicine = medicineService.add(medicine,image);
             return new ResponseEntity<>(dbMedicine,HttpStatus.OK);
-        }catch (IOException ioe){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"File upload error");
         } catch (EntityCreatingException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Unable to create medicine");
         }
