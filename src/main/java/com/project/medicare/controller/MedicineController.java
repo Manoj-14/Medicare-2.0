@@ -1,6 +1,5 @@
 package com.project.medicare.controller;
 
-import com.project.medicare.entity.Image;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
