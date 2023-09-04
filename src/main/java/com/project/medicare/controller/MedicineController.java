@@ -1,5 +1,6 @@
 package com.project.medicare.controller;
 
+import com.project.medicare.aws.AwsBucketService;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.exception.EntityCreatingException;
 import com.project.medicare.exception.MedicineNotFoundException;
@@ -29,6 +30,10 @@ public class MedicineController {
 
     @Autowired
     MedicineService medicineService;
+
+    @Autowired
+    private AwsBucketService awsService;
+
     @GetMapping
     public ResponseEntity<?> getAll(){
         try{
@@ -58,12 +63,8 @@ public class MedicineController {
         medicine.setSeller(seller);
         medicine.setQuantity(quantity);
         try{
-            Image newImage = new Image(image.getName(), image.getContentType(), image.getBytes());
-            medicine.setImage(newImage);
-            Medicine dbMedicine = medicineService.add(medicine);
+            Medicine dbMedicine = medicineService.add(medicine,image);
             return new ResponseEntity<>(dbMedicine,HttpStatus.OK);
-        }catch (IOException ioe){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"File upload error");
         } catch (EntityCreatingException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Unable to create medicine");
         }
