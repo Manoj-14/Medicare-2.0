@@ -12,11 +12,13 @@ import com.project.medicare.jwt.utils.JwtUtil;
 import com.project.medicare.mapper.PurchaseMedicinesRequestMapper;
 import com.project.medicare.service.UserService;
 import com.project.medicare.utils.Log;
+import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -79,7 +81,6 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }
         var userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        System.out.println(userDetails);
         var jwt = jwtTokenUtil.generateToken(userDetails);
         return new AuthenticationResponse(jwt);
     }
@@ -155,6 +156,19 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Medicine is inactive");
         } catch (MedicineNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Medicine not found");
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/cart")
+    public ResponseEntity<?> getCart(HttpServletRequest request){
+        final String authorizationHeader = request.getHeader("Authorization");
+        var token = authorizationHeader.substring(7);
+        var email = jwtTokenUtil.extractUsername(token);
+        try{
+            return new ResponseEntity<>(userService.getUserCart(email),HttpStatus.OK);
+        } catch (UserNotFoundException | NoSuchAlgorithmException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 

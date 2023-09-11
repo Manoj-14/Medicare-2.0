@@ -225,4 +225,13 @@ public class UserServiceImpl implements UserService{
             throw new MedicineNotFoundException();
         }
     }
+
+    @Override
+    public List<Cart> getUserCart(String email) throws UserNotFoundException, NoSuchAlgorithmException {
+        if(userRepo.existsByEmail(email)) {
+            return this.findUser(email).getCart();
+        }else{
+            throw new UserNotFoundException();
+        }
+    }
 }
