@@ -90,7 +90,7 @@ public class UserController {
         String new_password = request.get("newPassword");
         try{
             userService.changePassword(id,old_password,new_password);
-            return new ResponseEntity<>("Password changed", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (UserNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }catch (VerifyError ve){
@@ -105,7 +105,7 @@ public class UserController {
         Log.INFO(this,"Medicine ID: "+medicineId);
         try{
             userService.addToCart(email,medicineId);
-            return new ResponseEntity<>("Added to cart",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (MedicineNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         }catch (MedicineInActiveException mne){
@@ -119,7 +119,7 @@ public class UserController {
         String email = request.get("email");
         try{
             userService.removeFromCart(email,medicineId);
-            return new ResponseEntity<>("Removed from cart",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (MedicineNotFoundException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
         } catch (UserNotFoundException e) {
@@ -135,7 +135,7 @@ public class UserController {
         double totalAmount = (double) request.get("totalAmount");
         try {
             userService.purchaseMedicines(email,medicineId,quantity,totalAmount);
-            return new ResponseEntity<>("Medicine purchased successfully",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User Not found");
         }catch (MedicineInActiveException mae){
@@ -148,7 +148,7 @@ public class UserController {
         try {
             Log.INFO(this,"Purchases :"+request.toString());
             userService.purchaseMedicines(request.getEmail(),request.getPurchases());
-            return new ResponseEntity<>("Medicines purchased successfully",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User Not found");
         }catch (MedicineInActiveException mae){

@@ -25,7 +25,7 @@ public class AdminController {
     public ResponseEntity<?> create(@RequestBody Admin admin){
         try{
             int id = adminService.create(admin);
-            return new ResponseEntity<>("Admin "+admin.getName()+" created successfully",HttpStatus.CREATED);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }catch(EntityExistsException ee){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Admin already exists");
         }
@@ -59,7 +59,7 @@ public class AdminController {
         String new_password = request.get("newPassword");
         try{
             adminService.changePassword(id,old_password,new_password);
-            return new ResponseEntity<>("Password changed", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (VerifyError ve){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Password not matched");
         } catch (EntityNotFoundException ene){
