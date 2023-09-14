@@ -234,4 +234,25 @@ public class UserServiceImpl implements UserService{
             throw new UserNotFoundException();
         }
     }
+
+    @Override
+    public void removeMedicineFromCart(String userEmail, int medicineId) throws MedicineNotFoundException, UserNotFoundException {
+        try{
+            Medicine dbMedicine = this.medicineService.getMedicine(medicineId);
+            User user = this.findUser(userEmail);
+            if(userRepo.existsByEmailAndCart_Medicines_Id(userEmail,medicineId)){
+                Cart userCart = user.getCart().stream()
+                        .filter(cartItem -> cartItem.getMedicines().getId() == medicineId)
+                        .findFirst()
+                        .orElse(null);
+                user.getCart().remove(userCart);
+            }
+            else {
+                throw new EntityNotFoundException("Medicine not found");
+            }
+            userRepo.save(user);
+        }catch (MedicineNotFoundException mne){
+            throw new MedicineNotFoundException();
+        }
+    }
 }

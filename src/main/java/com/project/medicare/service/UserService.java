@@ -2,6 +2,7 @@ package com.project.medicare.service;
 
 import com.project.medicare.dto.UserDto;
 import com.project.medicare.entity.Cart;
+import com.project.medicare.entity.Medicine;
 import com.project.medicare.entity.User;
 import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
@@ -36,4 +37,5 @@ public interface UserService {
     @Transactional
     void purchaseMedicines(String email,List<PurchaseMapper> purchases) throws MedicineInActiveException, UserNotFoundException, MedicineNotFoundException;
     List<Cart> getUserCart(String email) throws UserNotFoundException, NoSuchAlgorithmException;
+    void removeMedicineFromCart(String userEmail,int medicineId) throws MedicineNotFoundException , UserNotFoundException;
 }

@@ -85,6 +85,7 @@ public class UserController {
         return new AuthenticationResponse(jwt);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/changePassword/{id}")
     public ResponseEntity<?> changePassword(@PathVariable int id,@NotNull @RequestBody Map<String,String> request){
         String old_password = request.get("oldPassword");
@@ -99,6 +100,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/addToCart/{medicineId}")
     public ResponseEntity<?> addToCart(@RequestBody Map<String,String> request ,@PathVariable int medicineId){
         String email = request.get("email");
@@ -115,6 +117,8 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/removeToCart/{medicineId}")
     public ResponseEntity<?> removeFromCart(@RequestBody Map<String,String> request , @PathVariable int medicineId){
         String email = request.get("email");
@@ -128,6 +132,21 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/removeMedicineFromCart/{medicineId}")
+    public ResponseEntity<?> removeMedicineFromCart(@RequestBody Map<String,String> request , @PathVariable int medicineId){
+        String email = request.get("email");
+        try{
+            userService.removeMedicineFromCart(email,medicineId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (MedicineNotFoundException ene){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Medicine not found");
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/purchase")
     public ResponseEntity<?> purchaseMedicine(@NotNull @RequestBody Map<String,Object> request){
         String email = (String) request.get("email");
@@ -144,6 +163,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/purchases")
     public ResponseEntity<?> purchaseMedicines(@NotNull @RequestBody PurchaseMedicinesRequestMapper request){
         try {
