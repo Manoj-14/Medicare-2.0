@@ -14,7 +14,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id ;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     Medicine medicines;
     int quantity;
 

@@ -10,6 +10,7 @@ import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.exception.UserNotFoundException;
 import com.project.medicare.mapper.PurchaseMapper;
+import com.project.medicare.repository.CartRepository;
 import com.project.medicare.repository.MedicineRepository;
 import com.project.medicare.repository.PurchaseRepository;
 import com.project.medicare.repository.UserRepository;
@@ -42,6 +43,8 @@ public class UserServiceImpl implements UserService{
     MedicineService medicineService;
     @Autowired
     PurchaseRepository purchaseRepository;
+    @Autowired
+    CartRepository cartRepository;
 
     private final ModelMapper mapper;
 
@@ -168,6 +171,7 @@ public class UserServiceImpl implements UserService{
                             .orElse(null);
                     if(userCart.getQuantity() == 1){
                         user.getCart().remove(userCart);
+                        cartRepository.delete(cartRepository.findById(userCart.getId()));
                     }
                     else {
                         userCart.setQuantity(userCart.getQuantity()-1);
@@ -246,6 +250,7 @@ public class UserServiceImpl implements UserService{
                         .findFirst()
                         .orElse(null);
                 user.getCart().remove(userCart);
+                cartRepository.delete(cartRepository.findById(userCart.getId()));
             }
             else {
                 throw new EntityNotFoundException("Medicine not found");
