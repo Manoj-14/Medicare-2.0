@@ -2,13 +2,11 @@ package com.project.medicare.service;
 
 import com.project.medicare.config.ModelMapperConfig;
 import com.project.medicare.dto.UserDto;
-import com.project.medicare.entity.Cart;
-import com.project.medicare.entity.Medicine;
-import com.project.medicare.entity.Purchase;
-import com.project.medicare.entity.User;
+import com.project.medicare.entity.*;
 import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.exception.UserNotFoundException;
+import com.project.medicare.jwt.service.ApplicationUserDetailsService;
 import com.project.medicare.mapper.PurchaseMapper;
 import com.project.medicare.repository.CartRepository;
 import com.project.medicare.repository.MedicineRepository;
@@ -45,6 +43,8 @@ public class UserServiceImpl implements UserService{
     PurchaseRepository purchaseRepository;
     @Autowired
     CartRepository cartRepository;
+    @Autowired
+    ApplicationUserDetailsService userDetailService;
 
     private final ModelMapper mapper;
 
@@ -115,15 +115,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void changePassword(int id, String old_password, String new_password) throws UserNotFoundException, VerifyError {
-        User user = userRepo.findById(id);
+    public void changePassword(String email, String old_password, String new_password) throws UserNotFoundException, VerifyError, NoSuchAlgorithmException {
+        User user = this.findUser(email);
         if(user == null) throw new UserNotFoundException();
         else{
-            if (!Objects.equals(user.getPassword(), old_password)){
+            if (!userDetailService.verifyPasswordHash(old_password,user.getPassword(),user.getStoredSalt())){
                 throw new VerifyError();
             }
             else{
-//                user.setPassword(new_password);
+                byte[] salt = createSalt();
+                byte[] hashedPassword = createPasswordHash(new_password,salt);
+                user.setStoredSalt(salt);
+                user.setPassword(hashedPassword);
                 userRepo.save(user);
             }
         }
@@ -259,5 +262,37 @@ public class UserServiceImpl implements UserService{
         }catch (MedicineNotFoundException mne){
             throw new MedicineNotFoundException();
         }
+    }
+
+        public UserDto getProfile(String email) throws UserNotFoundException{
+        if(userRepo.existsByEmail(email)){
+            User user = this.findUser(email);
+            return this.entityToDto(user);
+        } else{
+            throw new UserNotFoundException();
+        }
+
+    }
+
+    @Override
+    public void updateAddress(String email, Address address) throws UserNotFoundException {
+        User user = this.findUser(email);
+        if(userRepo.existsByEmail(email)){
+            user.setAddress(address);
+        }else{
+            throw new UserNotFoundException();
+        }
+        userRepo.save(user);
+    }
+
+    @Override
+    public void updatePhone(String email, long phone) throws UserNotFoundException {
+        User user = this.findUser(email);
+        if(userRepo.existsByEmail(email)){
+            user.setPhone(phone);
+        }else{
+            throw new UserNotFoundException();
+        }
+        userRepo.save(user);
     }
 }

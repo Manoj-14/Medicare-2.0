@@ -1,5 +1,6 @@
 package com.project.medicare.dto;
 
+import com.project.medicare.entity.Address;
 import com.project.medicare.entity.Cart;
 import com.project.medicare.entity.Purchase;
 import jakarta.persistence.*;
@@ -19,6 +20,8 @@ public class UserDto {
     String name;
     String email;
     String password;
+    long phone;
     List<Cart> cart = new ArrayList<>();
     List<Purchase> purchases = new ArrayList<>();
+    Address address;
 }

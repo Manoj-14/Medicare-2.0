@@ -14,4 +14,6 @@ public interface ApplicationUserDetailsService extends UserDetailsService {
     UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
 
     User authenticate(String email, String password) throws NoSuchAlgorithmException;
+
+    public Boolean verifyPasswordHash(String password, byte[] hashedPassword, byte[] storedSalt) throws NoSuchAlgorithmException;
 }

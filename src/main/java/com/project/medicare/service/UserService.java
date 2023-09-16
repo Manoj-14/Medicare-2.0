@@ -1,6 +1,7 @@
 package com.project.medicare.service;
 
 import com.project.medicare.dto.UserDto;
+import com.project.medicare.entity.Address;
 import com.project.medicare.entity.Cart;
 import com.project.medicare.entity.Medicine;
 import com.project.medicare.entity.User;
@@ -27,7 +28,7 @@ public interface UserService {
     User findUser(String email) throws UsernameNotFoundException;
     User authenticate(String email, String password) throws UserNotFoundException;
     @Transactional
-    void changePassword(int id, String old_password,String new_password) throws UserNotFoundException , VerifyError;
+    void changePassword(String email, String old_password,String new_password) throws UserNotFoundException, VerifyError, NoSuchAlgorithmException;
     @Transactional
     void addToCart(String userEmail,int medicineId) throws MedicineNotFoundException, MedicineInActiveException, UserNotFoundException;
     @Transactional
@@ -38,4 +39,9 @@ public interface UserService {
     void purchaseMedicines(String email,List<PurchaseMapper> purchases) throws MedicineInActiveException, UserNotFoundException, MedicineNotFoundException;
     List<Cart> getUserCart(String email) throws UserNotFoundException, NoSuchAlgorithmException;
     void removeMedicineFromCart(String userEmail,int medicineId) throws MedicineNotFoundException , UserNotFoundException;
+    UserDto getProfile(String email) throws UserNotFoundException;
+    @Transactional
+    void updateAddress(String email, Address address) throws UserNotFoundException ;
+    @Transactional
+    void updatePhone(String email, long phone) throws UserNotFoundException ;
 }

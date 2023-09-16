@@ -1,13 +1,12 @@
 package com.project.medicare.jwt.service;
 
 import com.project.medicare.authentication.UserPrincipal;
-import com.project.medicare.service.UserService;
+import com.project.medicare.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import com.project.medicare.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +19,19 @@ import java.security.NoSuchAlgorithmException;
 public class ApplicationUserDetailsServiceImpl implements ApplicationUserDetailsService {
 
     @Autowired
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return new UserPrincipal(userService.findUser(email));
+        System.out.println(email);
+        return new UserPrincipal(userRepository.findByEmail(email));
     }
 
     @Override
     public User authenticate(String email, String password) throws NoSuchAlgorithmException{
         if (email.isEmpty() || password.isEmpty()) throw new BadCredentialsException("Unauthorized");
 
-        var user = userService.findUser(email);
+        var user = userRepository.findByEmail(email);
 
         if(user == null) throw new BadCredentialsException("unauthorized");
 
@@ -42,7 +42,7 @@ public class ApplicationUserDetailsServiceImpl implements ApplicationUserDetails
         return user;
     }
 
-    private Boolean verifyPasswordHash(String password, byte[] hashedPassword, byte[] storedSalt) throws NoSuchAlgorithmException {
+    public Boolean verifyPasswordHash(String password, byte[] hashedPassword, byte[] storedSalt) throws NoSuchAlgorithmException {
         if (password.isBlank() || password.isEmpty())
             throw new IllegalArgumentException("Password cannot be empty or whitespace only string.");
         if (hashedPassword.length != 64)

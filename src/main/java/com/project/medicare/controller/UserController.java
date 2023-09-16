@@ -3,6 +3,7 @@ package com.project.medicare.controller;
 import com.project.medicare.authentication.AuthenticationRequest;
 import com.project.medicare.authentication.AuthenticationResponse;
 import com.project.medicare.dto.UserDto;
+import com.project.medicare.entity.Address;
 import com.project.medicare.entity.User;
 import com.project.medicare.exception.MedicineInActiveException;
 import com.project.medicare.exception.MedicineNotFoundException;
@@ -12,6 +13,7 @@ import com.project.medicare.jwt.utils.JwtUtil;
 import com.project.medicare.mapper.PurchaseMedicinesRequestMapper;
 import com.project.medicare.service.UserService;
 import com.project.medicare.utils.Log;
+import com.project.medicare.utils.UserUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UserController extends UserUtility {
 
     @Autowired
     private UserService userService;
@@ -86,14 +88,16 @@ public class UserController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/changePassword/{id}")
-    public ResponseEntity<?> changePassword(@PathVariable int id,@NotNull @RequestBody Map<String,String> request){
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@NotNull @RequestBody Map<String,String> request,HttpServletRequest req){
+        var email = super.getEmailFromHeader(req);
         String old_password = request.get("oldPassword");
         String new_password = request.get("newPassword");
+        System.out.println(old_password+" "+new_password);
         try{
-            userService.changePassword(id,old_password,new_password);
+            userService.changePassword(email,old_password,new_password);
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch (UserNotFoundException ene){
+        }catch (UserNotFoundException | NoSuchAlgorithmException ene){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
         }catch (VerifyError ve){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Password not matched");
@@ -182,9 +186,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/cart")
     public ResponseEntity<?> getCart(HttpServletRequest request){
-        final String authorizationHeader = request.getHeader("Authorization");
-        var token = authorizationHeader.substring(7);
-        var email = jwtTokenUtil.extractUsername(token);
+        var email = super.getEmailFromHeader(request);
         try{
             return new ResponseEntity<>(userService.getUserCart(email),HttpStatus.OK);
         } catch (UserNotFoundException | NoSuchAlgorithmException e) {
@@ -192,4 +194,39 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(HttpServletRequest request){
+        var email = super.getEmailFromHeader(request);
+        try {
+            UserDto user = userService.getProfile(email);
+            return new ResponseEntity<>(user,HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/address")
+    public ResponseEntity<?> updateAddress(HttpServletRequest request,@RequestBody Address address){
+        var email = super.getEmailFromHeader(request);
+        try{
+            userService.updateAddress(email,address);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/phone")
+    public ResponseEntity<?> updatePhone(HttpServletRequest request,@RequestBody long phone){
+        var email = super.getEmailFromHeader(request);
+        try{
+            userService.updatePhone(email,phone);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
 }
