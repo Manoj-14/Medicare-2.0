@@ -193,7 +193,7 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     @Override
-    public void purchaseMedicines(String email, int medicineId, int quantity,double totalAmount) throws  MedicineInActiveException,UserNotFoundException {
+    public void purchaseMedicines(String email, int medicineId, int quantity,int totalAmount) throws  MedicineInActiveException,UserNotFoundException {
         try{
             Medicine dbMedicine = medicineService.getMedicine(medicineId);
             User user = this.findUser(email);
@@ -294,5 +294,14 @@ public class UserServiceImpl implements UserService{
             throw new UserNotFoundException();
         }
         userRepo.save(user);
+    }
+
+    @Override
+    public List<Purchase> getUserPurchases(String email) throws UserNotFoundException, NoSuchAlgorithmException {
+        if(userRepo.existsByEmail(email)) {
+            return this.findUser(email).getPurchases();
+        }else {
+            throw new UserNotFoundException();
+        }
     }
 }

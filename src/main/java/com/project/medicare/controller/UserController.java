@@ -152,11 +152,11 @@ public class UserController extends UserUtility {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/purchase")
-    public ResponseEntity<?> purchaseMedicine(@NotNull @RequestBody Map<String,Object> request){
-        String email = (String) request.get("email");
+    public ResponseEntity<?> purchaseMedicine(@NotNull @RequestBody Map<String,Object> request,HttpServletRequest req){
+        String email = super.getEmailFromHeader(req);
         int medicineId = (int) request.get("medicineId");
         int quantity = (int) request.get("quantity");
-        double totalAmount = (double) request.get("totalAmount");
+        int totalAmount = (Integer) request.get("totalAmount");
         try {
             userService.purchaseMedicines(email,medicineId,quantity,totalAmount);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -189,6 +189,17 @@ public class UserController extends UserUtility {
         var email = super.getEmailFromHeader(request);
         try{
             return new ResponseEntity<>(userService.getUserCart(email),HttpStatus.OK);
+        } catch (UserNotFoundException | NoSuchAlgorithmException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/purchases")
+    public ResponseEntity<?> getPurchases(HttpServletRequest request){
+        var email = super.getEmailFromHeader(request);
+        try{
+            return new ResponseEntity<>(userService.getUserPurchases(email),HttpStatus.OK);
         } catch (UserNotFoundException | NoSuchAlgorithmException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
