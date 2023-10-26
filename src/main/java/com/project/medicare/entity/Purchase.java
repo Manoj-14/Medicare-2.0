@@ -2,10 +2,10 @@ package com.project.medicare.entity;
 import jakarta.persistence.*;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@RedisHash("purchaseCache")
 public class Purchase {
 
     @Id
@@ -22,6 +22,8 @@ public class Purchase {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment method")
     PaymentMethods paymentMethod;
+
+    Date date = new Date();
 
     public PaymentMethods getPaymentMethod() {
         return paymentMethod;
@@ -79,6 +81,14 @@ public class Purchase {
 
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override

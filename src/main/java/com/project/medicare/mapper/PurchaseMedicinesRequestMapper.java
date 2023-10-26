@@ -1,25 +1,18 @@
 package com.project.medicare.mapper;
 
 
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@NoArgsConstructor
 public class PurchaseMedicinesRequestMapper {
-
-    String email;
     List<PurchaseMapper> purchases;
 
-    public PurchaseMedicinesRequestMapper(String email, List<PurchaseMapper> purchases) {
-        this.email = email;
+    public PurchaseMedicinesRequestMapper(List<PurchaseMapper> purchases){
         this.purchases = purchases;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public List<PurchaseMapper> getPurchases() {
         return purchases;
@@ -32,8 +25,7 @@ public class PurchaseMedicinesRequestMapper {
     @Override
     public String toString() {
         return "PurchaseMedicinesRequestMapper{" +
-                "email='" + email + '\'' +
-                ", purchases=" + purchases +
+                "purchases=" + purchases +
                 '}';
     }
 }

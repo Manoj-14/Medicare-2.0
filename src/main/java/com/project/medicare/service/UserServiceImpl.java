@@ -220,10 +220,10 @@ public class UserServiceImpl implements UserService{
         try{
             User user = this.findUser(email);
             for(PurchaseMapper purchaseMap: purchases){
-                Log.INFO(this,purchaseMap.toString());
                 Medicine medicine = medicineService.getMedicine(purchaseMap.getMedicineId());
                 Purchase purchase = new Purchase(medicine,purchaseMap.getQuantity(),purchaseMap.getTotalAmount());
                 user.getPurchases().add(purchase);
+                this.removeMedicineFromCart(email,medicine.getId());
             }
             userRepo.save(user);
         }catch (MedicineInActiveException mie){

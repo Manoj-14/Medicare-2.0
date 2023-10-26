@@ -1,9 +1,6 @@
 package com.project.medicare.repository;
 
-import com.project.medicare.entity.Address;
-import com.project.medicare.entity.Cart;
-import com.project.medicare.entity.Medicine;
-import com.project.medicare.entity.User;
+import com.project.medicare.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

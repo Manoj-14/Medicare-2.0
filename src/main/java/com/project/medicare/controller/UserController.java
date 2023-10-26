@@ -10,6 +10,7 @@ import com.project.medicare.exception.MedicineNotFoundException;
 import com.project.medicare.exception.UserNotFoundException;
 import com.project.medicare.jwt.service.ApplicationUserDetailsService;
 import com.project.medicare.jwt.utils.JwtUtil;
+import com.project.medicare.mapper.PurchaseMapper;
 import com.project.medicare.mapper.PurchaseMedicinesRequestMapper;
 import com.project.medicare.service.UserService;
 import com.project.medicare.utils.Log;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -169,10 +171,11 @@ public class UserController extends UserUtility {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/purchases")
-    public ResponseEntity<?> purchaseMedicines(@NotNull @RequestBody PurchaseMedicinesRequestMapper request){
+    public ResponseEntity<?> purchaseMedicines(@NotNull @RequestBody PurchaseMedicinesRequestMapper purchases, HttpServletRequest req){
         try {
-            Log.INFO(this,"Purchases :"+request.toString());
-            userService.purchaseMedicines(request.getEmail(),request.getPurchases());
+            Log.INFO(this,"Purchases :"+purchases);
+            var email = super.getEmailFromHeader(req);
+            userService.purchaseMedicines(email,purchases.getPurchases());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User Not found");
